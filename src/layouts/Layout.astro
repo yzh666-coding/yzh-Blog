@@ -172,5 +172,30 @@ const structuredData = {
 
     <!-- Load full theme logic -->
     <script src="../scripts/theme.ts"></script>
+    
+    <!-- Initialize i18n translations -->
+    <script>
+      import { getCurrentLanguage, useTranslations } from "@/i18n/utils";
+      import type { UIKey } from "@/i18n/ui";
+
+      function updateI18nText() {
+        const lang = getCurrentLanguage();
+        const t = useTranslations(lang);
+
+        // Update all elements with data-i18n attribute
+        document.querySelectorAll("[data-i18n]").forEach(element => {
+          const key = element.getAttribute("data-i18n");
+          if (key) {
+            element.textContent = t(key as UIKey);
+          }
+        });
+      }
+
+      // Initialize on page load
+      updateI18nText();
+
+      // Reinitialize on view transitions
+      document.addEventListener("astro:after-swap", updateI18nText);
+    </script>
   </body>
 </html>

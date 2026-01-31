@@ -1,0 +1,65 @@
+---
+/**
+ * Language toggle button component
+ * 语言切换按钮组件
+ */
+---
+
+<button
+  id="lang-btn"
+  class="focus-outline relative size-12 p-3 sm:size-8 sm:p-2 hover:text-accent font-medium"
+  title="Switch Language / 切换语言"
+  aria-label="language toggle"
+  aria-live="polite"
+>
+  <span id="lang-text" class="text-sm">中</span>
+</button>
+
+<script>
+  import { getCurrentLanguage, setLanguage } from "@/i18n/utils";
+  import { languages } from "@/i18n/ui";
+
+  function updateLanguageButton() {
+    const langBtn = document.querySelector("#lang-btn");
+    const langText = document.querySelector("#lang-text");
+
+    if (!langBtn || !langText) return;
+
+    // Get current language
+    const currentLang = getCurrentLanguage();
+
+    // Update button text to show the OTHER language (what it will switch TO)
+    // 更新按钮文本为另一种语言（将要切换到的语言）
+    const displayLang = currentLang === "zh" ? "EN" : "中";
+    langText.textContent = displayLang;
+    langBtn.setAttribute("aria-label", `Switch to ${languages[currentLang === "zh" ? "en" : "zh"]}`);
+  }
+
+  function setupLanguageToggle() {
+    const langBtn = document.querySelector("#lang-btn");
+
+    if (!langBtn) return;
+
+    langBtn.addEventListener("click", () => {
+      const currentLang = getCurrentLanguage();
+      const newLang = currentLang === "zh" ? "en" : "zh";
+      
+      // Save the new language
+      setLanguage(newLang);
+      
+      // Reload the page to apply the new language
+      // 重新加载页面以应用新语言
+      window.location.reload();
+    });
+  }
+
+  // Initialize on page load
+  updateLanguageButton();
+  setupLanguageToggle();
+
+  // Reinitialize on view transitions
+  document.addEventListener("astro:after-swap", () => {
+    updateLanguageButton();
+    setupLanguageToggle();
+  });
+</script>
