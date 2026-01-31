@@ -129,11 +129,11 @@ export const ui = {
 
     // Tags page
     "tags.title": "Tags",
-    "tags.description": "All the tags used in my blog posts.",
+    "tags.description": "All the tags used in blog posts.",
 
     // Archives page
     "archives.title": "Archives",
-    "archives.description": "All posts archived by date.",
+    "archives.description": "All articles archived by date.",
 
     // Post detail
     "post.publishedOn": "Published on",
