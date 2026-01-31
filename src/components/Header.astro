@@ -6,6 +6,7 @@ import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
 import LinkButton from "./LinkButton.astro";
+import LanguageToggle from "./LanguageToggle.astro";
 import { SITE } from "@/config";
 
 const { pathname } = Astro.url;
@@ -27,7 +28,7 @@ const isActive = (path: string) => {
   href="#main-content"
   class="absolute start-16 -top-full z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4"
 >
-  Skip to content
+  <span data-i18n="nav.skipToContent">Skip to content</span>
 </a>
 
 <header
@@ -73,17 +74,17 @@ const isActive = (path: string) => {
       >
         <li class="col-span-2">
           <a href="/posts" class:list={{ "active-nav": isActive("/posts") }}>
-            Posts
+            <span data-i18n="nav.posts">Posts</span>
           </a>
         </li>
         <li class="col-span-2">
           <a href="/tags" class:list={{ "active-nav": isActive("/tags") }}>
-            Tags
+            <span data-i18n="nav.tags">Tags</span>
           </a>
         </li>
         <li class="col-span-2">
           <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
-            About
+            <span data-i18n="nav.about">About</span>
           </a>
         </li>
         {
@@ -101,7 +102,7 @@ const isActive = (path: string) => {
                 aria-label="archives"
               >
                 <IconArchive class="hidden sm:inline-block" />
-                <span class="sm:sr-only">Archives</span>
+                <span class="sm:sr-only" data-i18n="nav.archives">Archives</span>
               </LinkButton>
             </li>
           )
@@ -117,7 +118,7 @@ const isActive = (path: string) => {
             aria-label="search"
           >
             <IconSearch />
-            <span class="sr-only">Search</span>
+            <span class="sr-only" data-i18n="nav.search">Search</span>
           </LinkButton>
         </li>
         {
@@ -136,12 +137,30 @@ const isActive = (path: string) => {
             </li>
           )
         }
+        <li class="col-span-1 flex items-center justify-center">
+          <LanguageToggle />
+        </li>
       </ul>
     </nav>
   </div>
 </header>
 
 <script>
+  import { getCurrentLanguage, useTranslations } from "@/i18n/utils";
+
+  function updateI18nText() {
+    const lang = getCurrentLanguage();
+    const t = useTranslations(lang);
+
+    // Update all elements with data-i18n attribute
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+      const key = element.getAttribute("data-i18n");
+      if (key) {
+        element.textContent = t(key as any);
+      }
+    });
+  }
+
   function toggleNav() {
     const menuBtn = document.querySelector("#menu-btn");
     const menuItems = document.querySelector("#menu-items");
@@ -151,10 +170,12 @@ const isActive = (path: string) => {
     if (!menuBtn || !menuItems || !menuIcon || !closeIcon) return;
 
     menuBtn.addEventListener("click", () => {
+      const lang = getCurrentLanguage();
+      const t = useTranslations(lang);
       const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
 
       menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? "Open Menu" : "Close Menu");
+      menuBtn.setAttribute("aria-label", openMenu ? t("nav.openMenu") : t("nav.closeMenu"));
 
       menuItems.classList.toggle("hidden");
       menuIcon.classList.toggle("hidden");
@@ -162,8 +183,13 @@ const isActive = (path: string) => {
     });
   }
 
+  // Initialize on page load
+  updateI18nText();
   toggleNav();
 
   // Runs on view transitions navigation
-  document.addEventListener("astro:after-swap", toggleNav);
+  document.addEventListener("astro:after-swap", () => {
+    updateI18nText();
+    toggleNav();
+  });
 </script>
